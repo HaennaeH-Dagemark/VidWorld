@@ -11,7 +11,7 @@ class Starter < Gosu::Window
     super 420, 680
     self.caption = "Games of History - Initializer"
     @font_large = Gosu::Font.new(35)
-    @selected_i = 0
+    @selected_i = 1
     @@pressing = false
   end
 
@@ -44,11 +44,11 @@ class Starter < Gosu::Window
 
   def start_game(num)
     if num == 1
-      File.open("Saves/default.txt", "w") { |f| f.write "1600 = W\n900 = H" }
-    elsif num == 2
-      File.open("Saves/default.txt", "w") { |f| f.write "1920 = W\n1080 = H" }
+      File.open("Saves/default.txt", "w") { |f| f.write "1600 \#= W\n900 \#= H" }
+   elsif num == 2
+      File.open("Saves/default.txt", "w") { |f| f.write "1920 \#= W\n1080 \#= H" }
     else
-      File.open("Saves/default.txt", "w") { |f| f.write "2560 = W\n1440 = H" }
+      File.open("Saves/default.txt", "w") { |f| f.write "2560 \#= W\n1440 \#= H" }
     end
     Starter.hide
     new_do(true)
