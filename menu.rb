@@ -16,3 +16,15 @@ class Menu < Gosu::Window
   def draw
   end
 end
+
+
+
+
+
+
+
+def new_do(does)
+  if does == true
+    Menu.new.show
+  end
+end

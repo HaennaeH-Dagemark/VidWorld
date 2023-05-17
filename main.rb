@@ -1,5 +1,5 @@
 require 'gosu'
-require_relative 'menu.rb'
+require_relative 'menu'
 
 class Starter < Gosu::Window
   def initialize
@@ -50,8 +50,8 @@ class Starter < Gosu::Window
     else
       File.open("Saves/default.txt", "w") { |f| f.write "2560 = W\n1440 = H" }
     end
-    Starter.close!
-    Menu.new.show
+    Starter.hide
+    new_do(true)
   end
 
   def is_selected(num)
