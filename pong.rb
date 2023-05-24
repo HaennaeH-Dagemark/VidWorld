@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'gosu'
 require_relative 'menu'
 
