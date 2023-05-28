@@ -9,6 +9,8 @@ function pacdude() love.graphics.circle("fill",pacx * (x / tiles[1]),y - pacy * 
 move_dir = 0
 available_dir = {true, true, true, true}
 love.window.setMode(x, y)
+length = {0,0,0,0}
+roadmap = {}
 
 num_nav = {}
 function getpointtiles()
@@ -43,7 +45,8 @@ function love.load()
 	Terrain = {}
 	Terrain.Body = love.physics.newBody(World, 0, 0, "static")
 	Terrain.Stuff = {}
-	mapgen()
+	--mapgen()
+    maptest()
 
 	Ray = {
 		x1 = 0,
@@ -52,6 +55,13 @@ function love.load()
 		y2 = 0,
 		hitList = {}
 	}
+
+    for i=0,tiles[1] do
+        roadmap[i] = 0
+        if i == 3 then
+            roadmap[i] = i
+        end
+    end
 end
 
 function love.update(dt)    
@@ -68,8 +78,8 @@ function love.update(dt)
 	-- Cast the ray and populate the hitList table.
 	World:rayCast(Ray.x1, Ray.y1, Ray.x2* 0, Ray.y2, worldRayCastCallback)
     World:rayCast(Ray.x1, Ray.y1, Ray.x2, Ray.y2* 0, worldRayCastCallback)
-    World:rayCast(Ray.x1, Ray.y1, Ray.x2* 0 + x, Ray.y2* 0, worldRayCastCallback)
-    World:rayCast(Ray.x1, Ray.y1, Ray.x2* 0, Ray.y2* 0 + y, worldRayCastCallback)
+    World:rayCast(Ray.x1, Ray.y1, Ray.x2* 0 + x, Ray.y2, worldRayCastCallback)
+    World:rayCast(Ray.x1, Ray.y1, Ray.x2, Ray.y2* 0 + y, worldRayCastCallback)
 
 end
 
@@ -92,8 +102,8 @@ function love.draw()
 	love.graphics.setColor(1, 1, 1, .4)
 	love.graphics.line(Ray.x1, Ray.y1, Ray.x2*0, Ray.y2)
 	love.graphics.line(Ray.x1, Ray.y1, Ray.x2, Ray.y2*0)
-	love.graphics.line(Ray.x1, Ray.y1, Ray.x2*0 + x, Ray.y2*0)
-	love.graphics.line(Ray.x1, Ray.y1, Ray.x2*0, Ray.y2*0 + y)
+	love.graphics.line(Ray.x1, Ray.y1, Ray.x2*0 + x, Ray.y2)
+	love.graphics.line(Ray.x1, Ray.y1, Ray.x2, Ray.y2*0 + y)
 	love.graphics.setLineWidth(1)
 
 	-- Drawing the intersection points and normal vectors if there were any.
@@ -103,8 +113,36 @@ function love.draw()
 		love.graphics.circle("line", hit.x, hit.y, 3)
 		love.graphics.setColor(0, 1, 0)
 		love.graphics.line(hit.x, hit.y, hit.x + hit.xn * 25, hit.y + hit.yn * 25)
+        if hit.xn == 0 then 
+            love.graphics.print("Distance" .. y - pacy * (y / tiles[2]) - hit.y, hit.x + 20, hit.y + 20)
+            if y - pacy * (y / tiles[2]) - hit.y < x / tiles[1] / 2 + 2 and y - pacy * (y / tiles[2]) - hit.y > x / tiles[1] / 2 - 2 then
+                available_dir[1] = false
+                length[1] = table.getn(Ray.hitList)
+            elseif y - pacy * (y / tiles[2]) - hit.y > (x / tiles[1] / 2 + 2)*-1 and y - pacy * (y / tiles[2]) - hit.y < (x / tiles[1] / 2 - 2)*-1 then
+                available_dir[4] = false
+                length[4] = table.getn(Ray.hitList)
+            end
+        else
+            love.graphics.print("Distance" .. pacx * (x / tiles[1]) - hit.x, hit.x + 20, hit.y + 20)
+            if pacx * (x / tiles[1]) - hit.x < x / tiles[1] / 2 + 2 and pacx * (x / tiles[1]) - hit.x > x / tiles[1] / 2 - 2 then
+                available_dir[2] = false
+                length[2] = table.getn(Ray.hitList)
+            elseif pacx * (x / tiles[1]) - hit.x > (x / tiles[1] / 2 + 2)*-1 and pacx * (x / tiles[1]) - hit.x < (x / tiles[1] / 2 - 2)*-1 then
+                available_dir[3] = false
+                length[3] = table.getn(Ray.hitList)
+            end
+        end
+        for i=1,4,1 do
+            if length[i] > 0 then
+                length[i] = length[i] - 1
+            end
+            if length[i] == 0 then
+                available_dir[i] = true
+            end
+        end
 	end
 
+    love.graphics.print("1:" .. tostring(available_dir[1]) .. " 2:" .. tostring(available_dir[2]) .. " 3:" .. tostring(available_dir[3]) .. " 4:" .. tostring(available_dir[4]), x * 0.75, 10)
     love.graphics.print("X:" .. x .. " X Tiles:" .. tiles[1] .. " X Tilesize:" .. x / tiles[1], x/2, 10)
     love.graphics.print("Y:" .. y .. " Y Tiles:" .. tiles[2] .. " Y Tilesize:" .. y / tiles[2], x/2, 20)
     love.graphics.print("Pac X:" .. pacx * (x / tiles[1]) .. " Pac X Tile:" .. pacx, x/4, 10)
@@ -113,6 +151,15 @@ function love.draw()
     keypress()
     pacmanmove()
     availablecheck()
+    maptest()
+end
+
+function maptest()
+    for i = 1, tiles[1] do
+        for k = 1, tiles[2] do
+            love.graphics.rectangle("line",i*(x / tiles[1]), k* (y / tiles[2]), 10, 10)
+        end
+    end
 end
 
 function mapgen()
@@ -123,7 +170,7 @@ function mapgen()
 	end
 
 	-- Generates some random shapes.
-	for i = 1, tiles[1] do
+	for i = 1, tiles[1] * tiles[2] do
 		local p = {}
 		p.x, p.y = math.random(1, tiles[1]), math.random(1, tiles[2])
 		local w, h = x / tiles[1], y / tiles[2]
@@ -131,6 +178,11 @@ function mapgen()
 		p.Fixture = love.physics.newFixture(Terrain.Body, p.Shape)
 		Terrain.Stuff[i] = p
         point_tiles[p.x][p.y] = false
+        if roadmap[p.x] == p.y then
+            Terrain.Stuff[i] = nil
+            Terrain.Stuff[i].Fixture:destroy()
+            point_tiles[p.x][p.y] = true
+        end
 	end
 end
 function tilegen()
@@ -153,7 +205,7 @@ function keypress()
         move_dir = 4
     end
 
-    if love.keyboard.isDown( 'e' ) then
+    if love.keyboard.isDown( 'e' ) or available_dir[move_dir] == false then
         move_dir = 0
     end
 end

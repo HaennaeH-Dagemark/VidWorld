@@ -16,7 +16,7 @@ Ppoints = 0
 count = {0, 0}
 math.randomseed(os.time())
 
-function pongdraw()
+function love.draw()
     love.graphics.circle("fill", circlex, circley, base_radius)
     love.graphics.print("Enemy tactic:" .. count[2] .. " " .. count[1] .. " " .. computery, x/2, 10)
     love.graphics.print("Ball x:" .. circlex .. " Ball y:" .. circley .. " Ball speed:" .. ballspeed, x*0.25, 10)
