@@ -1,0 +1,24 @@
+for i, hit in ipairs(Ray.hitList) do
+		love.graphics.setColor(1, 0, 0)
+		love.graphics.print(i, hit.x, hit.y) -- Prints the hit order besides the point.
+		love.graphics.circle("line", hit.x, hit.y, 3)
+		love.graphics.setColor(0, 1, 0)
+		love.graphics.line(hit.x, hit.y, hit.x + hit.xn * 25, hit.y + hit.yn * 25)
+	end
+
+    World:rayCast(Ray.x1, Ray.y1, Ray.x2*0, Ray.y2, worldRayCastCallback)
+    World:rayCast(Ray.x1, Ray.y1, Ray.x2, Ray.y2*0, worldRayCastCallback)
+    World:rayCast(Ray.x1, Ray.y1, Ray.x2*0+x, Ray.y2, worldRayCastCallback)
+    World:rayCast(Ray.x1, Ray.y1, Ray.x2, Ray.y2*0+y, worldRayCastCallback)
+    
+    love.graphics.setLineWidth(3)
+    love.graphics.setColor(1, 1, 1, .4)
+    love.graphics.line(Ray.x1, Ray.y1, Ray.x2*0, Ray.y2)
+    love.graphics.line(Ray.x1, Ray.y1, Ray.x2, Ray.y2*0)
+    love.graphics.line(Ray.x1, Ray.y1, Ray.x2*0+x, Ray.y2)
+    love.graphics.line(Ray.x1, Ray.y1, Ray.x2, Ray.y2*0+y)
+    if Ray.hitList[1] ~= nil then
+        love.graphics.print("Hitlist:" .. Ray.hitList[1], x*0.75, 10)
+    end
+
+    World:rayCast(Ray.x1, Ray.y1, Ray.x2*0, Ray.y2, worldRayCastCallback)
