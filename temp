@@ -1,0 +1,58 @@
+for i, hit in ipairs(Ray.hitList) do
+		love.graphics.setColor(1, 0, 0)
+		love.graphics.print(i, hit.x, hit.y) -- Prints the hit order besides the point.
+		love.graphics.circle("line", hit.x, hit.y, 3)
+		love.graphics.setColor(0, 1, 0)
+		love.graphics.line(hit.x, hit.y, hit.x + hit.xn * 25, hit.y + hit.yn * 25)
+	end
+
+    World:rayCast(Ray.x1, Ray.y1, Ray.x2*0, Ray.y2, worldRayCastCallback)
+    World:rayCast(Ray.x1, Ray.y1, Ray.x2, Ray.y2*0, worldRayCastCallback)
+    World:rayCast(Ray.x1, Ray.y1, Ray.x2*0+x, Ray.y2, worldRayCastCallback)
+    World:rayCast(Ray.x1, Ray.y1, Ray.x2, Ray.y2*0+y, worldRayCastCallback)
+    
+    love.graphics.setLineWidth(3)
+    love.graphics.setColor(1, 1, 1, .4)
+    love.graphics.line(Ray.x1, Ray.y1, Ray.x2*0, Ray.y2)
+    love.graphics.line(Ray.x1, Ray.y1, Ray.x2, Ray.y2*0)
+    love.graphics.line(Ray.x1, Ray.y1, Ray.x2*0+x, Ray.y2)
+    love.graphics.line(Ray.x1, Ray.y1, Ray.x2, Ray.y2*0+y)
+    if Ray.hitList[1] ~= nil then
+        love.graphics.print("Hitlist:" .. Ray.hitList[1], x*0.75, 10)
+    end
+
+    World:rayCast(Ray.x1, Ray.y1, Ray.x2*0, Ray.y2, worldRayCastCallback)
+
+
+
+    -- temp02
+
+    if hit.xn == 0 then 
+        love.graphics.print("Distance" .. y - pacy * (y / tiles[2]) - hit.y, hit.x + 20, hit.y + 20)
+        if y - pacy * (y / tiles[2]) - hit.y < x / tiles[1] / 2 + 2 and y - pacy * (y / tiles[2]) - hit.y > x / tiles[1] / 2 - 2 then
+            available_dir[1] = false
+            length[1] = table.getn(Ray.hitList)
+        elseif y - pacy * (y / tiles[2]) - hit.y > (x / tiles[1] / 2 + 2)*-1 and y - pacy * (y / tiles[2]) - hit.y < (x / tiles[1] / 2 - 2)*-1 then
+            available_dir[4] = false
+            length[4] = table.getn(Ray.hitList)
+        end
+    else
+        love.graphics.print("Distance" .. pacx * (x / tiles[1]) - hit.x, hit.x + 20, hit.y + 20)
+        if pacx * (x / tiles[1]) - hit.x < x / tiles[1] / 2 + 2 and pacx * (x / tiles[1]) - hit.x > x / tiles[1] / 2 - 2 then
+            available_dir[2] = false
+            length[2] = table.getn(Ray.hitList)
+        elseif pacx * (x / tiles[1]) - hit.x > (x / tiles[1] / 2 + 2)*-1 and pacx * (x / tiles[1]) - hit.x < (x / tiles[1] / 2 - 2)*-1 then
+            available_dir[3] = false
+            length[3] = table.getn(Ray.hitList)
+        end
+    end
+    for i=1,4,1 do
+        if length[i] > 0 then
+            length[i] = length[i] - 1
+        end
+        if length[i] == 0 then
+            available_dir[i] = true
+        end
+    end
+
+    love.physics.newCircleShape(pacx * (x / tiles[1]), y - pacy * (y / tiles[2]), tiles[1] / 2) p.Shape = 
